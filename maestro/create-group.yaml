@@ -1,0 +1,26 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state.
+- launchApp
+- tapOn:
+    text: "People"
+
+- assertVisible: "Groups"
+- tapOn:
+    text: "New group"
+- assertVisible: "GROUP NAME"
+
+- tapOn:
+    text: "e.g. Book club, Family"
+- inputText: "Maestro test group"
+
+# Pick at least one member
+- tapOn:
+    index: 0
+    text: ".+"
+    enabled: true
+
+- tapOn: "Create"
+
+# Group should now appear in the strip
+- assertVisible: "Maestro test group"

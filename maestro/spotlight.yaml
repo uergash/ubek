@@ -1,0 +1,20 @@
+appId: ai.ubek.friend
+---
+# Smoke test for the People page spotlight card. Just verifies the card
+# renders and Open profile works — the specific person varies day-to-day so
+# we can't assert on a name.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "People"
+- extendedWaitUntil:
+    visible: "Today's spotlight"
+    timeout: 5000
+- assertVisible: "Open profile"
+
+# Tap Open profile. Should navigate to a person's profile.
+- tapOn: "Open profile"
+- extendedWaitUntil:
+    visible: "Overview"
+    timeout: 5000
+- assertVisible: "Add note"

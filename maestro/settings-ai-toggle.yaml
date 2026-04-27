@@ -1,0 +1,38 @@
+appId: ai.ubek.friend
+---
+# Toggles AI features off, navigates into a profile, asserts the summary
+# section shows the "AI features off" hint, then turns it back on. Verifies
+# the toggle actually propagates to feature gates.
+- launchApp
+- assertVisible: "Home"
+
+# Open Settings via the gear icon on Home.
+- tapOn:
+    id: "home_settings"
+- assertVisible: "AI features"
+
+# Flip AI features off.
+- tapOn:
+    id: "settings_ai_toggle"
+
+# Close Settings sheet.
+- tapOn: "Done"
+
+# Open a profile (Adam) and check the Overview tab summary copy.
+- tapOn: "People"
+- tapOn: "Search all people"
+- tapOn: "Search by name"
+- inputText: "Adam"
+- tapOn: "Adam Saeman"
+- assertVisible: "Overview"
+- extendedWaitUntil:
+    visible: "AI features are off"
+    timeout: 10000
+
+# Restore: head back to Home (clears the nav stack), open Settings, flip on.
+- tapOn: "Home"
+- tapOn:
+    id: "home_settings"
+- tapOn:
+    id: "settings_ai_toggle"
+- tapOn: "Done"

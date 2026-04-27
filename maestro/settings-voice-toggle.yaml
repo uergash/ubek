@@ -1,0 +1,35 @@
+appId: ai.ubek.friend
+---
+# Toggles Voice transcription off, opens an Add Note sheet, asserts the mic
+# button is gone, then turns it back on.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn:
+    id: "home_settings"
+- assertVisible: "Voice transcription"
+
+- tapOn:
+    id: "settings_voice_toggle"
+
+- tapOn: "Done"
+
+# Open Add Note via the FAB.
+- tapOn:
+    id: "plus"
+- assertVisible: "New note for"
+- tapOn: "Adam Saeman"
+- tapOn: "Next"
+- assertVisible: "For Adam Saeman"
+
+# Mic button + helper text should be hidden when voice is off.
+- assertNotVisible: "Hold to talk"
+
+# Cancel out, restore the toggle.
+- tapOn: "Cancel"
+- tapOn: "Home"
+- tapOn:
+    id: "home_settings"
+- tapOn:
+    id: "settings_voice_toggle"
+- tapOn: "Done"

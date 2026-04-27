@@ -1,0 +1,41 @@
+appId: ai.ubek.friend
+---
+# Add a gift to a person's wishlist, then mark it as given and verify it
+# moves to the Gifted section. Assumes signed-in state.
+- launchApp
+- assertVisible: "Home"
+
+# Navigate to Adam's profile → Gifts tab.
+- tapOn: "People"
+- tapOn: "Search all people"
+- tapOn: "Search by name"
+- inputText: "Adam"
+- tapOn: "Adam Saeman"
+- tapOn: "Gifts"
+
+# Tap the dashed "+ New gift idea" button (always visible at top of the tab).
+- tapOn: "New gift idea"
+- assertVisible: "Add a gift idea"
+
+- tapOn: "e.g. Linea Mini espresso machine"
+- inputText: "Maestro test gift"
+- tapOn: "Add"
+
+# Verify the gift appears in Wishlist.
+- assertVisible: "Maestro test gift"
+
+# Each wishlist row has a "Mark as given →" link button. Match by accessibility
+# id — the trailing unicode arrow confuses regex text matching.
+- tapOn:
+    id: "gift_mark_given"
+- assertVisible: "Occasion"
+
+- tapOn: "e.g. Birthday 2026"
+- inputText: "Maestro birthday"
+
+# Default reaction is "loved". Save.
+- tapOn: "Save"
+
+# Gift moves to Gifted section.
+- assertVisible: "Gifted"
+- assertVisible: "Maestro test gift"

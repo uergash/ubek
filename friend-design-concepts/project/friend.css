@@ -1,0 +1,58 @@
+/* Friend app — design tokens */
+:root {
+  --bg: oklch(0.985 0.008 75);
+  --card: #ffffff;
+  --card-soft: oklch(0.97 0.012 75);
+  --ink: oklch(0.22 0.012 60);
+  --ink-soft: oklch(0.36 0.012 60);
+  --muted: oklch(0.55 0.012 60);
+  --hairline: oklch(0.92 0.01 70);
+  --chip-bg: oklch(0.94 0.012 70);
+
+  --accent: oklch(0.66 0.13 40);
+  --accent-deep: oklch(0.46 0.11 38);
+  --accent-soft: oklch(0.94 0.04 50);
+  --accent-tint: oklch(0.96 0.025 50);
+
+  --health-green: oklch(0.7 0.13 145);
+  --health-yellow: oklch(0.8 0.14 85);
+  --health-red: oklch(0.62 0.18 28);
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
+}
+
+button { font-family: inherit; letter-spacing: inherit; }
+
+.scroll-hide::-webkit-scrollbar { display: none; }
+.scroll-hide { scrollbar-width: none; }
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.scroll-area {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-top: 50px; /* under status bar */
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+
+.fade-in { animation: fadeIn 240ms ease-out both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }

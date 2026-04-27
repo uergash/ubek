@@ -1,0 +1,26 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state AND that the test account has at least one person in
+# red health (overdue past contact frequency) so the Nudges strip has pills.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "People"
+- assertVisible: "Nudges"
+
+# Tap the first pill in the strip. Pills sit just below the "Nudges N new"
+# header at roughly the top-third of the People page. A point tap is more
+# robust than text matching here because pill content depends on test data.
+- tapOn:
+    point: "20%,28%"
+
+# Expanded card appears below the strip with the full suggestion + actions.
+- assertVisible: "Open profile"
+
+- tapOn: "Open profile"
+
+# Lands on a person's profile (Overview tab by default). The middle-dot in
+# "Friend ·" trips up Maestro's text matching, so use stable landmarks.
+- assertVisible: "Edit"
+- assertVisible: "Overview"
+- assertVisible: "Add note"

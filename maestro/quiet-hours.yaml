@@ -1,0 +1,21 @@
+appId: ai.ubek.friend
+---
+# Smoke test the Quiet Hours editor: open the sheet from Settings, save, and
+# confirm the row label updates. We don't drive the SwiftUI Picker wheels —
+# that's brittle in Maestro on iOS — just verify the editor opens and saves.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn:
+    id: "home_settings"
+- assertVisible: "Quiet hours"
+
+- tapOn: "Quiet hours"
+- assertVisible: "Quiet hours window"
+
+# Save without changes — verifies the round-trip works.
+- tapOn: "Save"
+
+# Should be back on Settings with the same row visible.
+- assertVisible: "Quiet hours"
+- tapOn: "Done"

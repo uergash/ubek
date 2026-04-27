@@ -1,0 +1,16 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state AND that create-group.yaml has run at some point so
+# "Maestro test group" exists. If not, run create-group first.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "People"
+- assertVisible: "Groups"
+
+- tapOn: "Maestro test group"
+
+# AllPeopleView opens with the group filter pre-selected. The filter chip row
+# shows the active filter; only group members appear in the list below.
+- assertVisible: "All people"
+- assertVisible: "Maestro test group"

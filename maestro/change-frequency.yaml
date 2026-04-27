@@ -1,0 +1,19 @@
+appId: ai.ubek.friend
+---
+# Change the user's default contact frequency in Settings and verify the
+# new value displays back on the Settings row.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "Settings"
+- assertVisible: "Reach-out cadence"
+
+- tapOn: "Default frequency"
+
+# Pick "Every 2 weeks" (14 days). The picker option's presence is itself proof
+# the sheet loaded.
+- tapOn: "Every 2 weeks"
+- tapOn: "Save"
+
+# Settings row reflects the new value.
+- assertVisible: "14 days"

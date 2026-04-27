@@ -1,0 +1,18 @@
+appId: ai.ubek.friend
+---
+# Smoke test of the bottom-tab navigation. Bounces between Home, People, and
+# Settings; asserts each tab renders a distinct landmark.
+- launchApp
+- assertVisible: "Home"
+- assertVisible: "Upcoming"
+
+- tapOn: "People"
+- assertVisible: "Top contacts"
+- assertVisible: "Groups"
+
+- tapOn: "Settings"
+- assertVisible: "Reach-out cadence"
+- assertVisible: "Sign out"
+
+- tapOn: "Home"
+- assertVisible: "Upcoming"

@@ -1,0 +1,37 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state. Adds a reminder for Adam Saeman → asserts it
+# surfaces on Home's "Coming due" section. Cross-screen state check.
+- launchApp
+- assertVisible: "Home"
+
+# Navigate to Adam's profile.
+- tapOn: "People"
+- tapOn: "Search all people"
+- tapOn: "Search by name"
+- inputText: "Adam"
+- tapOn: "Adam Saeman"
+- assertVisible: "Adam Saeman"
+
+# Reminders tab → New reminder sheet.
+- tapOn: "Reminders"
+- assertVisible: "New reminder"
+- tapOn: "New reminder"
+
+# Form sheet. Title field uses placeholder copy; tap and type.
+- assertVisible: "e.g. Send Alex the book recommendation"
+- tapOn: "e.g. Send Alex the book recommendation"
+- inputText: "Maestro: send the book"
+
+# Save (default due date is tomorrow 9am).
+- tapOn: "Save"
+
+# Reminder card shows up in the Reminders tab.
+- assertVisible: "Maestro: send the book"
+
+# Walk back to Home and verify it surfaced in Coming due.
+- tapOn: "Home"
+- extendedWaitUntil:
+    visible: "Coming due"
+    timeout: 5000
+- assertVisible: "Maestro: send the book"

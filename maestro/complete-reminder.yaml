@@ -1,0 +1,26 @@
+appId: ai.ubek.friend
+---
+# Marks the reminder created in add-reminder.yaml as complete and verifies
+# it disappears from Home's "Coming due". Run after add-reminder.yaml.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "People"
+- tapOn: "Search all people"
+- tapOn: "Search by name"
+- inputText: "Adam"
+- tapOn: "Adam Saeman"
+- tapOn: "Reminders"
+
+- assertVisible: "Maestro: send the book"
+
+# Tap the leftmost check circle on the first reminder row. The accessibility
+# id is shared by all reminder rows; Maestro taps the first match.
+- tapOn:
+    id: "reminder_check"
+
+# Reminder moves to "Done" section.
+- assertVisible: "Done"
+- tapOn: "Home"
+# Coming due should no longer surface this reminder.
+- assertNotVisible: "Maestro: send the book"

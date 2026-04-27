@@ -1,0 +1,29 @@
+appId: ai.ubek.friend
+---
+# Add a custom date for a person and verify it shows up in their Dates tab.
+# We don't drive the graphical DatePicker — the default value (today) is
+# accepted as-is, which is fine for verifying the row appears.
+- launchApp
+- assertVisible: "Home"
+
+# Navigate to Adam's profile → Dates tab.
+- tapOn: "People"
+- tapOn: "Search all people"
+- tapOn: "Search by name"
+- inputText: "Adam"
+- tapOn: "Adam Saeman"
+- tapOn: "Dates"
+
+- tapOn: "Add a date"
+- assertVisible: "Add a date"
+
+# Switch to Custom kind so the label field is empty and we can type freely.
+- tapOn: "Custom"
+
+# Tap the placeholder text to focus the Label TextField, then type.
+- tapOn: "Triathlon, work start, etc."
+- inputText: "Maestro custom date"
+
+- tapOn: "Save"
+
+- assertVisible: "Maestro custom date"

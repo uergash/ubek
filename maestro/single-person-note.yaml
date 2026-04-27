@@ -1,0 +1,40 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state. Run after login.yaml in the same simulator session.
+- launchApp
+- assertVisible: "Home"
+
+# Open new-note picker
+- tapOn:
+    id: "plus"
+- assertVisible: "New note for"
+
+# Pick a single person, hit Next
+- tapOn: "Adam Saeman"
+- assertVisible: "New note for 1"
+- tapOn: "Next"
+
+# Compose. Header shows the person's full name.
+- assertVisible: "For Adam Saeman"
+
+- tapOn: "What did you and Adam talk about?"
+- inputText: "Quick coffee — recommended The Anthropocene Reviewed."
+
+- tapOn: "Save"
+
+# Fact extraction screen. Allow up to 15s for Claude.
+- extendedWaitUntil:
+    visible:
+      text: "(WE FOUND|No new key facts|Note saved)"
+    timeout: 15000
+
+- tapOn:
+    text: "(Save note|Done)"
+
+# After save we land on the person's profile, Notes tab pre-selected, with
+# the freshly created note at the top of the feed.
+- extendedWaitUntil:
+    visible: "Adam Saeman"
+    timeout: 5000
+- assertVisible: "Notes"
+- assertVisible: "Anthropocene"

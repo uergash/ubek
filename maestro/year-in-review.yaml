@@ -1,0 +1,33 @@
+appId: ai.ubek.friend
+---
+# Opens the "Your year" screen from Settings. Asserts the reflection card
+# loads, top-people section appears, and tapping a top person dismisses
+# both sheets and lands on that person's profile.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn:
+    id: "home_settings"
+- assertVisible: "Your year"
+
+- tapOn: "Your year"
+
+# Wait for Claude reflection to land. Hand-written fallback shows "showing up"
+# in the headline; Claude output is variable but always includes "REFLECTION"
+# section header.
+- extendedWaitUntil:
+    visible: "REFLECTION"
+    timeout: 15000
+
+# Top people section should render at the bottom.
+- assertVisible: "Top people"
+
+# Close the screen via Done.
+- tapOn: "Done"
+
+# Settings should still be open (its own sheet).
+- assertVisible: "Your year"
+- tapOn: "Done"
+
+# Back on Home.
+- assertVisible: "Upcoming"

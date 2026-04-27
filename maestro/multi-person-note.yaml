@@ -1,0 +1,48 @@
+appId: ai.ubek.friend
+---
+# Assumes already-signed-in state (run login.yaml first, no clearState here).
+- launchApp
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 5000
+
+# Open the new-note picker via the centered FAB
+- tapOn:
+    id: "plus"
+- assertVisible: "New note for"
+
+# Select two people. Tap should toggle, NOT auto-advance.
+# Names hardcoded against the test account's contacts — adjust if you reseed.
+- tapOn: "Adam Saeman"
+- tapOn: "Alex Nazzaro"
+- assertVisible: "New note for 2"
+
+- tapOn: "Next"
+
+# AddNoteView shows the multi-person header
+- assertVisible: "For 2 people"
+
+- tapOn:
+    text: "What happened with everyone?"
+- inputText: "Sunday brunch — talked about summer travel plans and the new podcast."
+
+- tapOn: "Save"
+
+# Fact extraction view appears
+- extendedWaitUntil:
+    visible:
+      text: "(WE FOUND|No new key facts|Note saved)"
+    timeout: 15000
+
+# Confirm
+- tapOn:
+    text: "(Save note|Done)"
+
+# Lands on the primary (first-selected) person's profile, Notes tab open.
+- extendedWaitUntil:
+    visible: "Adam Saeman"
+    timeout: 5000
+- assertVisible: "Notes"
+- assertVisible: "podcast"
+# Co-attendee attribution should appear on the note card.
+- assertVisible: "With Alex"

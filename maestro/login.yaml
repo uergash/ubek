@@ -1,0 +1,47 @@
+appId: ai.ubek.friend
+env:
+  EMAIL: ${MAESTRO_FRIEND_EMAIL}
+  PASSWORD: ${MAESTRO_FRIEND_PASSWORD}
+---
+- launchApp:
+    clearState: true
+
+# Welcome screen → tap into Sign In
+- assertVisible: "I have an account"
+- tapOn: "I have an account"
+
+# Sign In screen
+- assertVisible: "Welcome back"
+- tapOn:
+    id: "signin_email"
+- inputText: ${EMAIL}
+- tapOn:
+    id: "signin_password"
+- inputText: ${PASSWORD}
+- hideKeyboard
+# Coordinate tap: Maestro's id/text taps re-verify the element after firing,
+# but the Sign in button's text changes to "Signing in…" mid-request and the
+# screen transitions away — so verification flakes. A point tap doesn't verify.
+- tapOn:
+    point: "50%,55%"
+
+# Post-signin: onboarding screens reappear because clearState wiped local prefs.
+# Skip both. The asserts use extendedWaitUntil since auth + nav take a beat.
+- extendedWaitUntil:
+    visible: "Skip for now"
+    timeout: 10000
+- tapOn: "Skip for now"
+
+- extendedWaitUntil:
+    visible: "Maybe later"
+    timeout: 5000
+- tapOn: "Maybe later"
+
+# Land on Home. The "Home" tab label at the bottom is the most stable signal —
+# greeting copy varies with time of day and Maestro's regex matching on
+# multiline Text nodes is finicky.
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 10000
+- assertVisible: "People"
+- assertVisible: "Settings"

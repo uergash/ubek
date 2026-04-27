@@ -1,0 +1,21 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state. Verifies sign-out tears the session down and
+# returns the user to the Welcome screen.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "Settings"
+- assertVisible: "Sign out"
+
+- scrollUntilVisible:
+    element: "Sign out"
+    direction: DOWN
+
+- tapOn: "Sign out"
+
+# Should land back on the Welcome screen.
+- extendedWaitUntil:
+    visible: "I have an account"
+    timeout: 5000
+- assertVisible: "Get started"

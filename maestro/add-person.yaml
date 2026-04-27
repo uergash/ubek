@@ -1,0 +1,26 @@
+appId: ai.ubek.friend
+---
+# Manually create a new person via the People page "+" button. Verifies the
+# form saves and lands on the new profile.
+- launchApp
+- assertVisible: "Home"
+
+- tapOn: "People"
+- tapOn:
+    id: "people_add"
+- assertVisible: "New person"
+
+- tapOn: "Name"
+- inputText: "Maestro Tester"
+
+# Default relation is "Friend" so we can leave it. Also leave avatar/freq
+# at defaults — happy path.
+
+- tapOn: "Add"
+
+# Lands on the new person's profile (NewPersonSheet's onCreate navigates).
+- extendedWaitUntil:
+    visible: "Maestro Tester"
+    timeout: 5000
+- assertVisible: "Overview"
+- assertVisible: "Add note"

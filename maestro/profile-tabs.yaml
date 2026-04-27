@@ -1,0 +1,43 @@
+appId: ai.ubek.friend
+---
+# Assumes signed-in state.
+- launchApp
+- assertVisible: "Home"
+
+# Navigate to People → tap a person to open their profile.
+- tapOn: "People"
+- assertVisible: "Top contacts"
+
+# Open the All People sheet. The list is sorted by health state first
+# (red/no-notes at the top), so a freshly-noted person can slide below the
+# fold — search by name instead of relying on visible position.
+- tapOn: "Search all people"
+- assertVisible: "All people"
+
+- tapOn: "Search by name"
+- inputText: "Adam"
+- tapOn: "Adam Saeman"
+
+# Profile loads. Default tab is Overview.
+- assertVisible: "Adam Saeman"
+- assertVisible: "Overview"
+
+# Tab through each section. Use simple substring assertions (Maestro's
+# regex alternation `(a|b)` matching is flaky on multi-line nodes).
+- tapOn: "Notes"
+# "Coffee" interaction type is in any saved note's card. Adam has notes from
+# the single/multi-person flows, so this is reliable here.
+- assertVisible: "Coffee"
+
+- tapOn: "Gifts"
+- assertVisible: "Wishlist"
+
+- tapOn: "Dates"
+- assertVisible: "Add a date"
+
+- tapOn: "Reminders"
+- assertVisible: "New reminder"
+
+# Back to Overview to confirm the tab switch round-trips.
+- tapOn: "Overview"
+- assertVisible: "Adam Saeman"
