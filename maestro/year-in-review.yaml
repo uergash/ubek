@@ -19,8 +19,11 @@ appId: ai.ubek.friend
     visible: "REFLECTION"
     timeout: 15000
 
-# Top people section should render at the bottom.
-- assertVisible: "Top people"
+# Top people section renders below the reflection card — needs a scroll.
+- scrollUntilVisible:
+    element:
+      text: "Top people"
+    timeout: 3000
 
 # Close the screen via Done.
 - tapOn: "Done"

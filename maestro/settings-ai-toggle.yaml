@@ -1,35 +1,50 @@
 appId: ai.ubek.friend
 ---
-# Toggles AI features off, navigates into a profile, asserts the summary
-# section shows the "AI features off" hint, then turns it back on. Verifies
-# the toggle actually propagates to feature gates.
+# Toggles AI features off, opens a fresh profile (no cached summary), asserts
+# the summary card shows the "AI features off" hint, then turns it back on.
+#
+# We create a scratch profile here rather than reusing a seeded person:
+# ProfileViewModel only swaps in the off-message when no summary has been
+# generated yet, so any previously-visited person may have one cached and
+# the off-state is invisible.
 - launchApp
 - assertVisible: "Home"
 
-# Open Settings via the gear icon on Home.
+# Create the scratch profile (no notes → no cached summary).
+- tapOn: "People"
+- tapOn:
+    id: "people_add"
+- assertVisible: "New person"
+- tapOn: "Name"
+- inputText: "AI Toggle Tester"
+- tapOn:
+    text: "Add"
+    enabled: true
+- extendedWaitUntil:
+    visible: "AI Toggle Tester"
+    timeout: 10000
+
+# Back to Home, open Settings, flip AI features off.
+- tapOn: "Home"
 - tapOn:
     id: "home_settings"
 - assertVisible: "AI features"
-
-# Flip AI features off.
 - tapOn:
     id: "settings_ai_toggle"
-
-# Close Settings sheet.
 - tapOn: "Done"
 
-# Open a profile (Adam) and check the Overview tab summary copy.
+# Open the scratch profile and verify the AI-off summary copy.
 - tapOn: "People"
 - tapOn: "Search all people"
 - tapOn: "Search by name"
-- inputText: "Adam"
-- tapOn: "Adam Saeman"
+- inputText: "AI Toggle Tester"
+- tapOn: "AI Toggle Tester"
 - assertVisible: "Overview"
 - extendedWaitUntil:
     visible: "AI features are off"
     timeout: 10000
 
-# Restore: head back to Home (clears the nav stack), open Settings, flip on.
+# Restore: Home → Settings → flip on → dismiss.
 - tapOn: "Home"
 - tapOn:
     id: "home_settings"

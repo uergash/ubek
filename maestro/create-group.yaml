@@ -6,8 +6,11 @@ appId: ai.ubek.friend
     text: "People"
 
 - assertVisible: "Groups"
+# Section header "New" action — visible whenever any group already exists.
+# (The dashed "New group" card itself sits at the end of a horizontal scroll
+# and goes off-screen once groups exist, so we use the header button.)
 - tapOn:
-    text: "New group"
+    text: "New"
 - assertVisible: "GROUP NAME"
 
 - tapOn:

@@ -10,7 +10,9 @@ appId: ai.ubek.friend
 
 - tapOn: "Maestro test group"
 
-# AllPeopleView opens with the group filter pre-selected. The filter chip row
-# shows the active filter; only group members appear in the list below.
-- assertVisible: "All people"
+# AllPeopleView opens with the group filter pre-selected. "All people" is the
+# inline navigation title; sheet present + nav title render takes a beat.
+- extendedWaitUntil:
+    visible: "All people"
+    timeout: 3000
 - assertVisible: "Maestro test group"

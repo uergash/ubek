@@ -1,7 +1,7 @@
 appId: ai.ubek.friend
 ---
-# Smoke test of the bottom-tab navigation. Bounces between Home, People, and
-# Settings; asserts each tab renders a distinct landmark.
+# Smoke test of bottom-tab navigation + Settings entry point. The bottom bar
+# only has Home + People — Settings is a sheet opened from Home's gear icon.
 - launchApp
 - assertVisible: "Home"
 - assertVisible: "Upcoming"
@@ -10,9 +10,13 @@ appId: ai.ubek.friend
 - assertVisible: "Top contacts"
 - assertVisible: "Groups"
 
-- tapOn: "Settings"
+# Back to Home, then open Settings via the gear (id: home_settings).
+- tapOn: "Home"
+- tapOn:
+    id: "home_settings"
 - assertVisible: "Reach-out cadence"
 - assertVisible: "Sign out"
 
-- tapOn: "Home"
+# Dismiss Settings sheet and confirm we land back on Home.
+- tapOn: "Done"
 - assertVisible: "Upcoming"

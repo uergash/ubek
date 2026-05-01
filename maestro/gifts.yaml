@@ -36,6 +36,9 @@ appId: ai.ubek.friend
 # Default reaction is "loved". Save.
 - tapOn: "Save"
 
-# Gift moves to Gifted section.
-- assertVisible: "Gifted"
+# Gift moves to Gifted section. Header text is "Gifted (N)" — wait for the
+# section to render after the async reload following Save.
+- extendedWaitUntil:
+    visible: "Gifted"
+    timeout: 5000
 - assertVisible: "Maestro test gift"

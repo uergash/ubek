@@ -37,4 +37,7 @@ appId: ai.ubek.friend
     visible: "Adam Saeman"
     timeout: 5000
 - assertVisible: "Notes"
-- assertVisible: "Anthropocene"
+# Notes tab loads asynchronously after navigation — wait for the body excerpt.
+- extendedWaitUntil:
+    visible: "Anthropocene"
+    timeout: 5000

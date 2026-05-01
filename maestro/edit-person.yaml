@@ -22,9 +22,11 @@ appId: ai.ubek.friend
 
 - tapOn: "Save"
 
-# Header should reflect the new relation.
+# Header subtitle: "<relation> · <last interaction>". Match the divider so we
+# don't latch onto the "Family" chip in the (still-dismissing) edit sheet.
 - extendedWaitUntil:
-    visible: "Family"
+    visible:
+      text: "Family ·"
     timeout: 5000
 
 # Revert so the test is repeatable.
@@ -33,5 +35,6 @@ appId: ai.ubek.friend
 - tapOn: "Friend"
 - tapOn: "Save"
 - extendedWaitUntil:
-    visible: "Friend"
+    visible:
+      text: "Friend ·"
     timeout: 5000

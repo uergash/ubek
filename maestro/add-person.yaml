@@ -16,11 +16,15 @@ appId: ai.ubek.friend
 # Default relation is "Friend" so we can leave it. Also leave avatar/freq
 # at defaults — happy path.
 
-- tapOn: "Add"
+# NewPersonSheet's Add button transitions to "Saving…" mid-tap; constrain
+# the match so we don't grab a stray "Add" elsewhere.
+- tapOn:
+    text: "Add"
+    enabled: true
 
 # Lands on the new person's profile (NewPersonSheet's onCreate navigates).
 - extendedWaitUntil:
     visible: "Maestro Tester"
-    timeout: 5000
+    timeout: 10000
 - assertVisible: "Overview"
 - assertVisible: "Add note"

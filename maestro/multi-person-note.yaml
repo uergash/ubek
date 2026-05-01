@@ -14,7 +14,7 @@ appId: ai.ubek.friend
 # Select two people. Tap should toggle, NOT auto-advance.
 # Names hardcoded against the test account's contacts — adjust if you reseed.
 - tapOn: "Adam Saeman"
-- tapOn: "Alex Nazzaro"
+- tapOn: "Alex Rivera"
 - assertVisible: "New note for 2"
 
 - tapOn: "Next"
