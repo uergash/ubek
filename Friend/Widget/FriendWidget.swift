@@ -90,7 +90,7 @@ struct FriendWidgetView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("No upcoming dates")
                 .font(.system(size: 14, weight: .semibold))
-            Text("Open Friend to add a few people.")
+            Text("Open Bowline to add a few people.")
                 .font(.system(size: 11))
                 .foregroundStyle(Color.muted)
         }
@@ -175,7 +175,7 @@ struct FriendWidget: Widget {
         StaticConfiguration(kind: kind, provider: FriendWidgetProvider()) { entry in
             FriendWidgetView(entry: entry)
         }
-        .configurationDisplayName("Friend")
+        .configurationDisplayName("Bowline")
         .description("Upcoming dates and reach-out nudges.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }

@@ -10,11 +10,12 @@ struct WelcomeView: View {
             VStack(spacing: 0) {
                 Spacer()
                 logo
-                Text("Friend")
-                    .font(.system(size: 36, weight: .bold))
-                    .tracking(-0.9)
+                Text("Bowline")
+                    .font(.fraunces(size: 40))
+                    .tracking(-0.2)
+                    .foregroundStyle(Color.ink)
                     .padding(.top, 28)
-                Text("Remember what matters to the people you love.")
+                Text("Stay close to the people who matter.")
                     .font(.system(size: 16))
                     .foregroundStyle(Color.inkSoft)
                     .multilineTextAlignment(.center)
@@ -33,25 +34,16 @@ struct WelcomeView: View {
     }
 
     private var logo: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(LinearGradient(
-                    colors: [
-                        Color(hue: 0.10, saturation: 0.30, brightness: 0.90),
-                        Color.accent
-                    ],
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                ))
-                .frame(width: 88, height: 88)
-                .shadow(color: Color.accent.opacity(0.35), radius: 24, x: 0, y: 12)
-            Image(systemName: "heart.fill")
-                .font(.system(size: 38, weight: .regular))
-                .foregroundStyle(.white)
-        }
+        Image("AppLogo")
+            .resizable()
+            .interpolation(.high)
+            .frame(width: 88, height: 88)
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .shadow(color: Color.accent.opacity(0.35), radius: 24, x: 0, y: 12)
     }
 
     private var aiDisclosure: some View {
-        Text("Friend uses generative AI (Anthropic Claude) to summarize your notes and suggest reach-outs. AI output may be inaccurate — you can always edit or remove it.")
+        Text("Bowline uses generative AI (Anthropic Claude) to summarize your notes and suggest reach-outs. AI output may be inaccurate — you can always edit or remove it.")
             .font(.system(size: 11))
             .foregroundStyle(Color.muted)
             .multilineTextAlignment(.center)

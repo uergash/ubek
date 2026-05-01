@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>ubek</string>
+    <string>Bowline</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,11 +27,11 @@
     <key>SUPABASE_ANON_KEY</key>
     <string>$(SUPABASE_ANON_KEY)</string>
     <key>NSContactsUsageDescription</key>
-    <string>Friend reads names, phone numbers, and birthdays from contacts you select, so you can import them as profiles. Contacts you don't select stay on your device.</string>
+    <string>Bowline reads names, phone numbers, and birthdays from contacts you select, so you can import them as profiles. Contacts you don't select stay on your device.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Friend records short voice memos when you tap the mic on a note, so you can dictate after a conversation instead of typing.</string>
+    <string>Bowline records short voice memos when you tap the mic on a note, so you can dictate after a conversation instead of typing.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
-    <string>Friend transcribes your voice memos on-device so the words appear as a note you can save, edit, and search.</string>
+    <string>Bowline transcribes your voice memos on-device so the words appear as a note you can save, edit, and search.</string>
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
@@ -49,6 +49,10 @@
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>UIAppFonts</key>
+    <array>
+        <string>Fraunces.ttf</string>
     </array>
     <key>CFBundleURLTypes</key>
     <array>
