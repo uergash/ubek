@@ -70,6 +70,36 @@ final class ClaudeService {
         return response.followups
     }
 
+    // ─── extract-gift-ideas ────────────────────────────────────────────────
+    struct ExtractGiftIdeasRequest: Encodable {
+        let noteBody: String
+        let personName: String
+        let existingGifts: [String]
+    }
+    struct GiftIdeaCandidate: Decodable {
+        let name: String
+        let note: String
+    }
+    struct ExtractGiftIdeasResponse: Decodable { let gifts: [GiftIdeaCandidate] }
+
+    /// Surfaces concrete, durable gift ideas from a note. Pass the names of
+    /// existing wishlist + already-given gifts so Claude doesn't re-suggest.
+    func extractGiftIdeas(
+        noteBody: String,
+        personName: String,
+        existingGifts: [String]
+    ) async throws -> [GiftIdeaCandidate] {
+        let response: ExtractGiftIdeasResponse = try await functions.invoke(
+            "extract-gift-ideas",
+            options: FunctionInvokeOptions(body: ExtractGiftIdeasRequest(
+                noteBody: noteBody,
+                personName: personName,
+                existingGifts: existingGifts
+            ))
+        )
+        return response.gifts
+    }
+
     /// Robust ISO 8601 parse — Claude sometimes returns full datetimes,
     /// sometimes date-only (yyyy-MM-dd). Try both; nil if neither parses.
     static func parseDueAt(_ s: String) -> Date? {

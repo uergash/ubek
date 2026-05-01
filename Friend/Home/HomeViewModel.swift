@@ -263,6 +263,11 @@ final class HomeViewModel {
             let yearGifts = allGifts.filter { g in
                 g.status == .given && (g.givenDate ?? .distantPast) >= oneYearAgo
             }
+            // Most recent wishlist items, capped so the card stays compact.
+            let wishlistIdeas = Array(allGifts
+                .filter { $0.status == .wishlist }
+                .sorted { $0.createdAt > $1.createdAt }
+                .prefix(3))
 
             let stats = OccasionCelebration.Stats(
                 noteCount: yearNotes.count,
@@ -303,7 +308,8 @@ final class HomeViewModel {
 
             built.append(OccasionCelebration(
                 person: person, date: date,
-                headline: headline, summary: summary, stats: stats
+                headline: headline, summary: summary, stats: stats,
+                giftIdeas: wishlistIdeas
             ))
         }
         celebrations = built

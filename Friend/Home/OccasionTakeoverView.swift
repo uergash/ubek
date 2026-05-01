@@ -68,6 +68,10 @@ struct OccasionTakeoverView: View {
                 .foregroundStyle(Color.ink)
                 .lineSpacing(4)
 
+            if !celebration.giftIdeas.isEmpty {
+                giftIdeasSection
+            }
+
             statsRow
                 .padding(.top, 2)
 
@@ -158,6 +162,47 @@ struct OccasionTakeoverView: View {
         .padding(.horizontal, 9)
         .padding(.vertical, 4)
         .background(Capsule().fill(Color.accent.opacity(0.12)))
+    }
+
+    // ─── Gift ideas ────────────────────────────────────────────────────────
+    private var giftIdeasSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 5) {
+                Image(systemName: "gift")
+                    .font(.system(size: 11, weight: .semibold))
+                Text("GIFT IDEAS")
+                    .font(.system(size: 10.5, weight: .semibold))
+                    .tracking(0.6)
+            }
+            .foregroundStyle(Color.accent)
+
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(celebration.giftIdeas) { gift in
+                    giftIdeaRow(gift)
+                }
+            }
+        }
+    }
+
+    private func giftIdeaRow(_ gift: Gift) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Circle()
+                .fill(Color.accent.opacity(0.55))
+                .frame(width: 5, height: 5)
+                .alignmentGuide(.firstTextBaseline) { d in d[.bottom] - 4 }
+            VStack(alignment: .leading, spacing: 1) {
+                Text(gift.name)
+                    .font(.system(size: isCompact ? 13.5 : 14.5, weight: .medium))
+                    .foregroundStyle(Color.ink)
+                if let note = gift.note, !note.isEmpty {
+                    Text(note)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.muted)
+                        .lineLimit(2)
+                }
+            }
+            Spacer(minLength: 0)
+        }
     }
 
     private var statsRow: some View {

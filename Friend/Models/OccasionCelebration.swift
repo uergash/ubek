@@ -9,6 +9,9 @@ struct OccasionCelebration: Identifiable {
     let headline: String
     let summary: String
     let stats: Stats
+    /// Up to ~3 wishlist gifts, surfaced inline on the takeover so the user
+    /// has something concrete to act on. Empty if the person has no wishlist.
+    let giftIdeas: [Gift]
 
     var id: UUID { date.id }
 

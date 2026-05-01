@@ -42,6 +42,19 @@ final class AddNoteViewModelTests: XCTestCase {
         XCTAssertTrue(vm.candidateFacts[1].keep, "Toggling one fact must not affect siblings")
     }
 
+    func test_toggleGift_flips_keep_state() {
+        let vm = AddNoteViewModel(person: Fixtures.person())
+        vm.candidateGifts = [
+            .init(name: "Linea Mini espresso machine", note: "He's been eyeing one for over a year"),
+            .init(name: "TC Pro climbing shoes", note: "Hers are blown out"),
+        ]
+        let firstId = vm.candidateGifts[0].id
+        XCTAssertTrue(vm.candidateGifts[0].keep)
+        vm.toggleGift(firstId)
+        XCTAssertFalse(vm.candidateGifts[0].keep)
+        XCTAssertTrue(vm.candidateGifts[1].keep, "Toggling one gift must not affect siblings")
+    }
+
     func test_default_interaction_type_is_coffee() {
         let vm = AddNoteViewModel(person: Fixtures.person())
         XCTAssertEqual(vm.interactionType, .coffee)

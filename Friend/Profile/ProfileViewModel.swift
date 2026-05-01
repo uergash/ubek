@@ -77,6 +77,10 @@ final class ProfileViewModel {
         let yearGifts = gifts.filter { g in
             g.status == .given && (g.givenDate ?? .distantPast) >= oneYearAgo
         }
+        let wishlistIdeas = Array(gifts
+            .filter { $0.status == .wishlist }
+            .sorted { $0.createdAt > $1.createdAt }
+            .prefix(3))
         let stats = OccasionCelebration.Stats(
             noteCount: yearNotes.count,
             giftCount: yearGifts.count,
@@ -112,7 +116,8 @@ final class ProfileViewModel {
 
         celebration = OccasionCelebration(
             person: person, date: date,
-            headline: headline, summary: summary, stats: stats
+            headline: headline, summary: summary, stats: stats,
+            giftIdeas: wishlistIdeas
         )
     }
 

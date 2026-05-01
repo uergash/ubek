@@ -37,6 +37,16 @@ final class AddNoteViewModel {
     }
     var candidateFollowups: [CandidateFollowup] = []
 
+    /// Gift ideas surfaced from Claude — kept ones land on the primary
+    /// person's wishlist.
+    struct CandidateGift: Identifiable {
+        let id = UUID()
+        var name: String
+        var note: String
+        var keep: Bool = true
+    }
+    var candidateGifts: [CandidateGift] = []
+
     /// One row id per person inserted, so confirmed key facts can be
     /// associated to each person's note row individually.
     var savedNoteIdsByPerson: [UUID: UUID] = [:]
@@ -46,6 +56,9 @@ final class AddNoteViewModel {
     let speech = SpeechRecognizer()
     /// Existing facts for the *primary* person — passed to Claude for dedupe.
     private var existingFacts: [String] = []
+    /// Existing gift names (wishlist + given) for the *primary* person —
+    /// passed to Claude so it doesn't re-suggest things already tracked.
+    private var existingGiftNames: [String] = []
 
     var person: Person { people[0] }
     var isMultiPerson: Bool { people.count > 1 }
@@ -59,14 +72,12 @@ final class AddNoteViewModel {
         self.people = people
     }
 
-    /// Pre-loads existing facts so Claude can dedupe.
+    /// Pre-loads existing facts and gifts so Claude can dedupe.
     func prepare() async {
-        do {
-            let facts = try await SupabaseService.shared.fetchKeyFacts(personId: person.id)
-            existingFacts = facts.map { $0.text }
-        } catch {
-            existingFacts = []
-        }
+        async let factsTask = SupabaseService.shared.fetchKeyFacts(personId: person.id)
+        async let giftsTask = SupabaseService.shared.fetchGifts(personId: person.id)
+        existingFacts = ((try? await factsTask) ?? []).map(\.text)
+        existingGiftNames = ((try? await giftsTask) ?? []).map(\.name)
     }
 
     // ─── Voice ────────────────────────────────────────────────────────────
@@ -135,17 +146,25 @@ final class AddNoteViewModel {
                     personName: person.firstName,
                     today: Date()
                 )
+                async let giftsTask = ClaudeService.shared.extractGiftIdeas(
+                    noteBody: body,
+                    personName: person.firstName,
+                    existingGifts: existingGiftNames
+                )
                 let facts = (try? await factsTask) ?? []
                 let followups = (try? await followupsTask) ?? []
+                let gifts = (try? await giftsTask) ?? []
 
                 candidateFacts = facts.map { CandidateFact(text: $0) }
                 candidateFollowups = followups.compactMap { f in
                     guard let due = ClaudeService.parseDueAt(f.dueAt) else { return nil }
                     return CandidateFollowup(title: f.title, dueAt: due)
                 }
+                candidateGifts = gifts.map { CandidateGift(name: $0.name, note: $0.note) }
             } else {
                 candidateFacts = []
                 candidateFollowups = []
+                candidateGifts = []
             }
             mode = .facts
         } catch {
@@ -193,6 +212,22 @@ final class AddNoteViewModel {
             _ = try? await SupabaseService.shared.createReminder(r)
         }
 
+        let keptGifts = candidateGifts.filter(\.keep)
+        for cg in keptGifts {
+            let g = Gift(
+                id: UUID(),
+                personId: person.id,
+                name: cg.name,
+                note: cg.note.isEmpty ? nil : cg.note,
+                status: .wishlist,
+                occasion: nil,
+                givenDate: nil,
+                reaction: nil,
+                createdAt: Date()
+            )
+            _ = try? await SupabaseService.shared.createGift(g)
+        }
+
         for p in people { AppEvents.noteSaved(personId: p.id) }
     }
 
@@ -204,5 +239,10 @@ final class AddNoteViewModel {
     func toggleFollowup(_ id: UUID) {
         guard let i = candidateFollowups.firstIndex(where: { $0.id == id }) else { return }
         candidateFollowups[i].keep.toggle()
+    }
+
+    func toggleGift(_ id: UUID) {
+        guard let i = candidateGifts.firstIndex(where: { $0.id == id }) else { return }
+        candidateGifts[i].keep.toggle()
     }
 }
