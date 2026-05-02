@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Paged carousel of reach-out nudges. One full card visible at a time;
 /// swipe horizontally or tap a page dot to navigate. Eliminates the
@@ -12,6 +13,8 @@ struct NudgesStripView: View {
 
     @Environment(\.openURL) private var openURL
     @State private var currentIndex: Int = 0
+    /// Per-suggestion "Copied" flash state.
+    @State private var copiedSuggestionId: UUID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -92,6 +95,8 @@ struct NudgesStripView: View {
                     .buttonStyle(.plain)
                 }
 
+                suggestedStartLabel
+
                 Text(s.suggestion)
                     .font(.system(size: 14))
                     .foregroundStyle(Color.inkSoft)
@@ -100,17 +105,12 @@ struct NudgesStripView: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                if let url = smsURL(for: s.person) {
-                    HStack {
-                        Spacer()
-                        Button { openURL(url) } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "message.fill")
-                                    .font(.system(size: 12, weight: .semibold))
-                                Text("Send text")
-                            }
-                        }
-                        .buttonStyle(AccentSecondaryButton())
+                HStack(spacing: 16) {
+                    Spacer()
+                    copyButton(for: s)
+                    if let url = smsURL(for: s.person, body: s.suggestion) {
+                        Button("Send text") { openURL(url) }
+                            .buttonStyle(AccentSecondaryButton())
                     }
                 }
             }
@@ -119,18 +119,46 @@ struct NudgesStripView: View {
         .onTapGesture { onOpenPerson(s.person) }
     }
 
+    private var suggestedStartLabel: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 10, weight: .semibold))
+            Text("SUGGESTED START")
+                .font(.system(size: 11, weight: .semibold))
+                .tracking(0.6)
+        }
+        .foregroundStyle(Color.accent)
+    }
+
+    /// Copies the drafted message to the clipboard with a brief "Copied"
+    /// confirmation so the action feels acknowledged.
+    private func copyButton(for s: PeopleViewModel.Suggestion) -> some View {
+        let isCopied = copiedSuggestionId == s.id
+        return Button(isCopied ? "Copied" : "Copy") {
+            UIPasteboard.general.string = s.suggestion
+            copiedSuggestionId = s.id
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                if copiedSuggestionId == s.id { copiedSuggestionId = nil }
+            }
+        }
+        .buttonStyle(AccentTertiaryButton())
+        .animation(.easeInOut(duration: 0.15), value: isCopied)
+    }
+
     private func daysSubtitle(_ p: Person) -> String {
         guard let d = p.daysSinceLastInteraction() else { return "No interactions logged yet" }
         return d == 1 ? "1 day since last interaction" : "\(d) days since last interaction"
     }
 
-    /// `sms:` URL with the recipient's phone — opens Messages with a draft.
-    /// Returns nil when the person has no phone on file.
-    private func smsURL(for person: Person) -> URL? {
+    /// `sms:` URL with recipient + pre-filled body — opens Messages with the
+    /// drafted text ready to send. Returns nil when the person has no phone.
+    /// iOS expects `sms:NUMBER&body=...` (ampersand, not query separator).
+    private func smsURL(for person: Person, body: String) -> URL? {
         guard let raw = person.phone, !raw.isEmpty else { return nil }
         let allowed = CharacterSet(charactersIn: "+0123456789")
         let cleaned = raw.unicodeScalars.filter { allowed.contains($0) }.map(String.init).joined()
         guard !cleaned.isEmpty else { return nil }
-        return URL(string: "sms:\(cleaned)")
+        let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        return URL(string: "sms:\(cleaned)&body=\(encodedBody)")
     }
 }

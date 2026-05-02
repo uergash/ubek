@@ -10,12 +10,13 @@ struct FactChipView: View {
                 .opacity(0.85)
             Text(text)
                 .font(.system(size: 13, weight: .medium))
+                .lineLimit(1)
+                .truncationMode(.tail)
         }
         .foregroundStyle(Color.accentDeep)
         .padding(.horizontal, 13)
         .padding(.vertical, 7)
         .background(Capsule().fill(Color.accentSoft))
-        .fixedSize(horizontal: true, vertical: false)
     }
 }
 

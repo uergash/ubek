@@ -6,6 +6,7 @@ struct GiftsTabView: View {
     var onAdd: () -> Void
 
     @State private var giftToMarkGiven: Gift?
+    @State private var giftToEdit: Gift?
 
     var body: some View {
         VStack(spacing: 14) {
@@ -59,6 +60,9 @@ struct GiftsTabView: View {
         .sheet(item: $giftToMarkGiven) { gift in
             MarkGiftGivenSheet(gift: gift, viewModel: viewModel)
         }
+        .sheet(item: $giftToEdit) { gift in
+            AddGiftSheet(viewModel: viewModel, existing: gift)
+        }
     }
 
     private func wishlistRow(_ gift: Gift) -> some View {
@@ -80,6 +84,8 @@ struct GiftsTabView: View {
                             .foregroundStyle(Color.muted)
                             .lineSpacing(2)
                     }
+                    // Mark-as-given keeps its own gesture target, so tapping
+                    // it doesn't also fire the row-level edit tap.
                     Button("Mark as given →") { giftToMarkGiven = gift }
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(Color.accent)
@@ -91,6 +97,8 @@ struct GiftsTabView: View {
                 Spacer(minLength: 0)
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture { giftToEdit = gift }
     }
 
     private func giftedRow(_ gift: Gift) -> some View {
@@ -147,12 +155,32 @@ struct GiftsTabView: View {
     }
 }
 
-// ─── Add gift sheet ────────────────────────────────────────────────────────
+// ─── Add / Edit gift sheet ────────────────────────────────────────────────
 struct AddGiftSheet: View {
     @Bindable var viewModel: ProfileViewModel
+    let existing: Gift?
     @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
-    @State private var note = ""
+
+    @State private var name: String
+    @State private var note: String
+
+    init(viewModel: ProfileViewModel, existing: Gift? = nil) {
+        self._viewModel = Bindable(viewModel)
+        self.existing = existing
+        _name = State(initialValue: existing?.name ?? "")
+        _note = State(initialValue: existing?.note ?? "")
+    }
+
+    private var isEditing: Bool { existing != nil }
+
+    private var trimmedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var trimmedNote: String? {
+        let t = note.trimmingCharacters(in: .whitespacesAndNewlines)
+        return t.isEmpty ? nil : t
+    }
 
     var body: some View {
         NavigationStack {
@@ -162,21 +190,42 @@ struct AddGiftSheet: View {
                     TextField("Why? (optional)", text: $note, axis: .vertical)
                         .lineLimit(2...4)
                 }
+
+                if isEditing, let existing {
+                    Section {
+                        Button(role: .destructive) {
+                            Task {
+                                await viewModel.deleteGift(existing)
+                                dismiss()
+                            }
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Text("Delete gift idea").font(.system(size: 15, weight: .semibold))
+                                Spacer()
+                            }
+                        }
+                    }
+                }
             }
-            .navigationTitle("Add a gift idea")
+            .navigationTitle(isEditing ? "Edit gift idea" : "Add a gift idea")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(isEditing ? "Save" : "Add") {
                         Task {
-                            await viewModel.addGift(name: name, note: note.isEmpty ? nil : note)
+                            if let existing {
+                                await viewModel.editGiftIdea(existing, name: trimmedName, note: trimmedNote)
+                            } else {
+                                await viewModel.addGift(name: trimmedName, note: trimmedNote)
+                            }
                             dismiss()
                         }
                     }
-                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(trimmedName.isEmpty)
                 }
             }
         }

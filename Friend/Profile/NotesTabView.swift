@@ -117,13 +117,16 @@ struct FlowLayout: Layout {
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let maxWidth = proposal.width ?? .infinity
+        // Cap each child's width at the row width so chips with long text
+        // truncate (or wrap, depending on the chip) instead of overflowing.
+        let childProposal = ProposedViewSize(width: maxWidth, height: nil)
         var rows: [[CGSize]] = [[]]
         var currentWidth: CGFloat = 0
         var totalHeight: CGFloat = 0
         var rowHeight: CGFloat = 0
 
         for sv in subviews {
-            let size = sv.sizeThatFits(.unspecified)
+            let size = sv.sizeThatFits(childProposal)
             let needed = (rows[rows.count - 1].isEmpty ? 0 : spacing) + size.width
             if currentWidth + needed > maxWidth, !rows[rows.count - 1].isEmpty {
                 totalHeight += rowHeight + lineSpacing
@@ -145,9 +148,10 @@ struct FlowLayout: Layout {
         var y: CGFloat = bounds.minY
         var rowHeight: CGFloat = 0
         let maxX = bounds.maxX
+        let childProposal = ProposedViewSize(width: bounds.width, height: nil)
 
         for sv in subviews {
-            let size = sv.sizeThatFits(.unspecified)
+            let size = sv.sizeThatFits(childProposal)
             if x + size.width > maxX, x > bounds.minX {
                 x = bounds.minX
                 y += rowHeight + lineSpacing

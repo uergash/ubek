@@ -13,11 +13,11 @@ final class NudgesStripViewSnapshotTests: XCTestCase {
     func test_strip_with_three_suggestions() {
         let suggestions: [PeopleViewModel.Suggestion] = [
             .init(person: Fixtures.person(name: "Alex Rivera", avatarHue: 22, lastInteractionDaysAgo: 28),
-                  suggestion: "Ask how the Lisbon trip went and the new role's first weeks."),
+                  suggestion: "Hey — how was Lisbon? And how are the first weeks in the new role treating you?"),
             .init(person: Fixtures.person(name: "Priya Sharma", avatarHue: 320, lastInteractionDaysAgo: 42),
-                  suggestion: "Share the article on color systems she'd been looking for."),
+                  suggestion: "Hey Priya — finally found that color systems article you were after. Sending it over."),
             .init(person: Fixtures.person(name: "Sam Lee", avatarHue: 150, lastInteractionDaysAgo: 60),
-                  suggestion: "Check in on his move and offer to help unpack this weekend."),
+                  suggestion: "Hey Sam — how's the move been going? Free this weekend if you want help unpacking."),
         ]
 
         let view = NudgesStripView(

@@ -4,6 +4,7 @@ import SwiftUI
 struct OverviewTabView: View {
     @Bindable var viewModel: ProfileViewModel
     @State private var reportingSummary = false
+    @State private var showingAllFacts = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -17,6 +18,9 @@ struct OverviewTabView: View {
             if let s = viewModel.summary {
                 AIReportSheet(kind: .summary, content: s, personId: viewModel.person?.id)
             }
+        }
+        .sheet(isPresented: $showingAllFacts) {
+            KeyFactsSheet(viewModel: viewModel)
         }
     }
 
@@ -56,7 +60,11 @@ struct OverviewTabView: View {
     private var keyFactsSection: some View {
         if !viewModel.keyFacts.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
-                SectionHeaderView(title: "Key facts", action: viewModel.keyFacts.count > 6 ? "See all" : nil)
+                SectionHeaderView(
+                    title: "Key facts",
+                    action: viewModel.keyFacts.count > 6 ? "See all" : nil,
+                    onActionTap: { showingAllFacts = true }
+                )
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(viewModel.keyFacts) { fact in

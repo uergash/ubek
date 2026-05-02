@@ -5,6 +5,8 @@ struct RemindersTabView: View {
     @Bindable var viewModel: ProfileViewModel
     var onAdd: () -> Void
 
+    @State private var reminderToEdit: Reminder?
+
     var body: some View {
         VStack(spacing: 14) {
             Button(action: onAdd) {
@@ -60,10 +62,15 @@ struct RemindersTabView: View {
                 }
             }
         }
+        .sheet(item: $reminderToEdit) { reminder in
+            AddReminderSheet(viewModel: viewModel, existing: reminder)
+        }
     }
 
     private func row(_ reminder: Reminder) -> some View {
         HStack(spacing: 14) {
+            // Checkbox keeps its own gesture so toggling complete doesn't
+            // also fire the row-level edit tap.
             Button {
                 Task { await viewModel.toggleReminderCompleted(reminder) }
             } label: {
@@ -86,40 +93,44 @@ struct RemindersTabView: View {
             }
 
             Spacer()
-
-            Button {
-                Task { await viewModel.deleteReminder(reminder) }
-            } label: {
-                Image(systemName: "trash")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.muted)
-                    .padding(8)
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("reminder_delete")
-            .accessibilityLabel("Delete reminder")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .contentShape(Rectangle())
+        .onTapGesture { reminderToEdit = reminder }
     }
 }
 
-// ─── Add reminder sheet ────────────────────────────────────────────────────
+// ─── Add / Edit reminder sheet ────────────────────────────────────────────
 struct AddReminderSheet: View {
     @Bindable var viewModel: ProfileViewModel
+    let existing: Reminder?
     @Environment(\.dismiss) private var dismiss
-    @State private var title: String = ""
+    @State private var title: String
     @State private var dueAt: Date
 
-    init(viewModel: ProfileViewModel) {
+    init(viewModel: ProfileViewModel, existing: Reminder? = nil) {
         self._viewModel = Bindable(viewModel)
-        // Default to tomorrow 9am
-        let cal = Calendar.current
-        var components = cal.dateComponents([.year, .month, .day], from: Date())
-        components.day = (components.day ?? 1) + 1
-        components.hour = 9
-        components.minute = 0
-        _dueAt = State(initialValue: cal.date(from: components) ?? Date().addingTimeInterval(24 * 3600))
+        self.existing = existing
+        if let existing {
+            _title = State(initialValue: existing.title)
+            _dueAt = State(initialValue: existing.dueAt)
+        } else {
+            _title = State(initialValue: "")
+            // Default to tomorrow 9am
+            let cal = Calendar.current
+            var components = cal.dateComponents([.year, .month, .day], from: Date())
+            components.day = (components.day ?? 1) + 1
+            components.hour = 9
+            components.minute = 0
+            _dueAt = State(initialValue: cal.date(from: components) ?? Date().addingTimeInterval(24 * 3600))
+        }
+    }
+
+    private var isEditing: Bool { existing != nil }
+
+    private var trimmedTitle: String {
+        title.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var body: some View {
@@ -132,8 +143,25 @@ struct AddReminderSheet: View {
                 Section("Due") {
                     DatePicker("When", selection: $dueAt)
                 }
+
+                if isEditing, let existing {
+                    Section {
+                        Button(role: .destructive) {
+                            Task {
+                                await viewModel.deleteReminder(existing)
+                                dismiss()
+                            }
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Text("Delete reminder").font(.system(size: 15, weight: .semibold))
+                                Spacer()
+                            }
+                        }
+                    }
+                }
             }
-            .navigationTitle("New reminder")
+            .navigationTitle(isEditing ? "Edit reminder" : "New reminder")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -142,11 +170,15 @@ struct AddReminderSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         Task {
-                            await viewModel.addReminder(title: title, dueAt: dueAt)
+                            if let existing {
+                                await viewModel.editReminder(existing, title: trimmedTitle, dueAt: dueAt)
+                            } else {
+                                await viewModel.addReminder(title: trimmedTitle, dueAt: dueAt)
+                            }
                             dismiss()
                         }
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(trimmedTitle.isEmpty)
                 }
             }
         }

@@ -138,6 +138,13 @@ final class SupabaseService {
             .value
     }
 
+    func updateKeyFact(_ fact: KeyFact) async throws {
+        try await client.from("key_facts")
+            .update(fact)
+            .eq("id", value: fact.id)
+            .execute()
+    }
+
     func deleteKeyFact(id: UUID) async throws {
         try await client.from("key_facts").delete().eq("id", value: id).execute()
     }

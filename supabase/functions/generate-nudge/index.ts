@@ -1,8 +1,8 @@
-// generate-nudge: writes a short reach-out suggestion for the user, grounded
-// in what they know about a friend.
+// generate-nudge: drafts a short text message the user can send to a friend
+// they haven't talked to recently — ready to copy or send from Messages.
 // Input:  { personName: string, keyFacts: string[],
 //           lastNotes: Array<{ type, body, date }>, daysSince: number }
-// Output: { suggestion: string }
+// Output: { suggestion: string }  ← the drafted message body
 
 import { corsHeaders } from "../_shared/cors.ts";
 import { callClaude } from "../_shared/claude.ts";
@@ -15,18 +15,20 @@ interface RequestBody {
   daysSince: number;
 }
 
-const SYSTEM = `You write short, specific reach-out suggestions to help someone
-get back in touch with a friend they haven't talked to recently.
+const SYSTEM = `You draft a short text message the user is about to send to a
+friend they haven't talked to recently. The output goes straight into the
+Messages app — write it the way the user would actually text.
 
 Rules:
-- 1 to 2 sentences. Conversational, warm, never preachy.
-- Always reference something concrete from the friend's key facts or recent notes
-  (an ongoing project, an event they mentioned, a person in their life). Don't
-  generate generic "you should reach out" copy.
-- Address the user directly with "You". Refer to the friend by first name.
-- Don't write the message itself — write the suggestion *to the user* about what
-  to bring up.
-- Output the suggestion text only, no quotes, no prefix.`;
+- Write in the user's voice, addressed to the friend. First person ("I", "we"),
+  second person to the friend ("you", "your"). Never refer to the user as "you".
+- Reference something concrete and specific from the friend's key facts or
+  recent notes (an ongoing project, a person in their life, a recent event).
+  No generic "thinking of you" filler.
+- 1 to 3 short sentences. Casual, warm, like a real text — contractions, no
+  formal sign-off, no "Hi [Name]," opener required (a quick "hey" is fine).
+- It's okay to ask a question; that often makes the text easier to reply to.
+- Output the message body only — no quotes, no prefix, no commentary.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -47,7 +49,7 @@ ${body.keyFacts.map((f) => `- ${f}`).join("\n") || "(none)"}
 Recent notes (newest first):
 ${noteList}
 
-Write the suggestion.`;
+Draft the text message.`;
 
     const suggestion = (await callClaude({
       system: SYSTEM,

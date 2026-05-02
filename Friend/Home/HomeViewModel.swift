@@ -367,13 +367,11 @@ final class HomeViewModel {
 }
 
 /// Hand-written nudge copy for cases where we don't have enough data to
-/// usefully prompt Claude.
+/// usefully prompt Claude. Returned as a drafted text message — same shape
+/// as the Claude output so the Copy / Send text actions work identically.
 enum NudgeCopy {
     static func coldFallback(person: Person) -> String {
-        if person.daysSinceLastInteraction() == nil {
-            return "You haven't logged anything for \(person.firstName) yet. A quick hello is a good place to start."
-        }
-        return "It's been a while since you connected with \(person.firstName). A quick hello goes a long way."
+        "Hey \(person.firstName) — it's been a minute. How have you been?"
     }
 }
 

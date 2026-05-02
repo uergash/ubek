@@ -211,6 +211,44 @@ final class ProfileViewModel {
         }
     }
 
+    func addKeyFact(text: String) async {
+        do {
+            let fact = KeyFact(
+                id: UUID(),
+                personId: personId,
+                text: text,
+                sourceNoteId: nil,
+                createdAt: Date()
+            )
+            let saved = try await SupabaseService.shared.createKeyFact(fact)
+            keyFacts.insert(saved, at: 0)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func editKeyFact(_ fact: KeyFact, text: String) async {
+        var updated = fact
+        updated.text = text
+        do {
+            try await SupabaseService.shared.updateKeyFact(updated)
+            if let idx = keyFacts.firstIndex(where: { $0.id == fact.id }) {
+                keyFacts[idx] = updated
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func deleteKeyFact(_ fact: KeyFact) async {
+        do {
+            try await SupabaseService.shared.deleteKeyFact(id: fact.id)
+            keyFacts.removeAll { $0.id == fact.id }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func markGiftAsGiven(_ gift: Gift, occasion: String, reaction: GiftReaction) async {
         var updated = gift
         updated.status = .given
@@ -239,6 +277,29 @@ final class ProfileViewModel {
             if let person = person {
                 await NotificationService.shared.scheduleDateReminders(for: person, dates: dates)
             }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func editGiftIdea(_ gift: Gift, name: String, note: String?) async {
+        var updated = gift
+        updated.name = name
+        updated.note = note
+        do {
+            try await SupabaseService.shared.updateGift(updated)
+            if let idx = gifts.firstIndex(where: { $0.id == gift.id }) {
+                gifts[idx] = updated
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func deleteGift(_ gift: Gift) async {
+        do {
+            try await SupabaseService.shared.deleteGift(id: gift.id)
+            gifts.removeAll { $0.id == gift.id }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -277,6 +338,25 @@ final class ProfileViewModel {
             )
             let saved = try await SupabaseService.shared.createReminder(reminder)
             reminders.append(saved)
+            reminders.sort { $0.dueAt < $1.dueAt }
+            if let person {
+                await NotificationService.shared.scheduleReminders(for: person, reminders: reminders)
+            }
+            AppEvents.personChanged()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func editReminder(_ reminder: Reminder, title: String, dueAt: Date) async {
+        var updated = reminder
+        updated.title = title
+        updated.dueAt = dueAt
+        do {
+            try await SupabaseService.shared.updateReminder(updated)
+            if let i = reminders.firstIndex(where: { $0.id == reminder.id }) {
+                reminders[i] = updated
+            }
             reminders.sort { $0.dueAt < $1.dueAt }
             if let person {
                 await NotificationService.shared.scheduleReminders(for: person, reminders: reminders)

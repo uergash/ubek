@@ -6,7 +6,7 @@ struct HomeView: View {
     @State private var showingImportContacts = false
     @State private var showingNewPerson = false
     var onOpenPerson: (Person) -> Void
-    /// Called when a "Coming due" row is tapped — caller deep-links to the
+    /// Called when a "Reminders" row is tapped — caller deep-links to the
     /// person's Reminders tab so the user lands where the action lives.
     var onOpenReminder: (Person) -> Void = { _ in }
     var onAddNote: (Person?) -> Void
@@ -23,10 +23,10 @@ struct HomeView: View {
                         emptyState
                     } else {
                         celebrationsSection
+                        memoriesSection
                         upcomingSection
                         dueRemindersSection
                         nudgesSection
-                        memoriesSection
                     }
                 }
             }
@@ -149,7 +149,7 @@ struct HomeView: View {
     private var dueRemindersSection: some View {
         if !viewModel.dueReminders.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                SectionHeaderView(title: "Coming due")
+                SectionHeaderView(title: "Reminders")
                 CardView(padding: 0) {
                     VStack(spacing: 0) {
                         ForEach(Array(viewModel.dueReminders.enumerated()), id: \.element.reminder.id) { i, item in
