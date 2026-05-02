@@ -29,7 +29,7 @@ struct AddNoteView: View {
                 Group {
                     switch viewModel.mode {
                     case .compose: composeMode
-                    case .recording: VoiceCaptureView(viewModel: viewModel) { viewModel.stopRecording() }
+                    case .recording: VoiceCaptureView(speech: viewModel.speech) { viewModel.stopRecording() }
                     case .extracting: extractingMode
                     case .facts: FactExtractionView(viewModel: viewModel) {
                         hideKeyboard()

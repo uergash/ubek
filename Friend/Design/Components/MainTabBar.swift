@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum MainTab: String, CaseIterable, Hashable {
-    case home, people
+    case home, stories, people, settings
 }
 
 /// Bottom tab bar with a centered accent FAB for the new-note action.
@@ -16,8 +16,10 @@ struct MainTabBar: View {
     var body: some View {
         HStack(spacing: 0) {
             tabButton(.home, icon: "house", label: "Home")
-            addButton
             tabButton(.people, icon: "person.2", label: "People")
+            addButton
+            tabButton(.stories, icon: "sparkles", label: "Stories")
+            tabButton(.settings, icon: "gearshape", label: "Settings")
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
@@ -49,6 +51,7 @@ struct MainTabBar: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("tab_\(tab.rawValue)")
     }
 
     private var addButton: some View {

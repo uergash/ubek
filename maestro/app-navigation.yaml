@@ -10,10 +10,9 @@ appId: ai.ubek.friend
 - assertVisible: "Top contacts"
 - assertVisible: "Groups"
 
-# Back to Home, then open Settings via the gear (id: home_settings).
-- tapOn: "Home"
+# Open Settings via the bottom tab (id: tab_settings).
 - tapOn:
-    id: "home_settings"
+    id: "tab_settings"
 - assertVisible: "Reach-out cadence"
 - assertVisible: "Sign out"
 

@@ -22,11 +22,17 @@ struct UpcomingCardView: View {
                     Text(person.firstName)
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color.ink)
-                    HStack(spacing: 5) {
+                    HStack(alignment: .top, spacing: 5) {
                         Image(systemName: date.kind.iconName)
                             .font(.system(size: 11))
-                        Text("\(date.label) · \(date.formattedDate)")
-                            .font(.system(size: 12.5))
+                            .padding(.top, 2)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(date.label)
+                                .font(.system(size: 12.5, weight: .medium))
+                                .lineLimit(1)
+                            Text(date.formattedDate)
+                                .font(.system(size: 12.5))
+                        }
                     }
                     .foregroundStyle(Color.muted)
                 }

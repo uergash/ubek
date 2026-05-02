@@ -7,7 +7,7 @@ appId: ai.ubek.friend
 - assertVisible: "Home"
 
 - tapOn:
-    id: "home_settings"
+    id: "tab_settings"
 - assertVisible: "Quiet hours"
 
 - tapOn: "Quiet hours"

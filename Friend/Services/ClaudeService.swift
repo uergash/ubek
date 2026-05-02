@@ -34,6 +34,28 @@ final class ClaudeService {
         return response.facts
     }
 
+    // ─── extract-self-facts ────────────────────────────────────────────────
+    struct ExtractSelfFactsRequest: Encodable {
+        let storyBody: String
+        let existingFacts: [String]
+    }
+
+    /// Pulls 0–5 durable "about me" facts from a story the user just jotted.
+    /// Existing self-facts are passed in for dedupe.
+    func extractSelfFacts(
+        storyBody: String,
+        existingFacts: [String]
+    ) async throws -> [String] {
+        let response: ExtractFactsResponse = try await functions.invoke(
+            "extract-self-facts",
+            options: FunctionInvokeOptions(body: ExtractSelfFactsRequest(
+                storyBody: storyBody,
+                existingFacts: existingFacts
+            ))
+        )
+        return response.facts
+    }
+
     // ─── extract-followups ─────────────────────────────────────────────────
     struct ExtractFollowupsRequest: Encodable {
         let noteBody: String

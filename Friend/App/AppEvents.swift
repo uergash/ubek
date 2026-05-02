@@ -8,6 +8,7 @@ extension Notification.Name {
     static let friendPersonChanged = Notification.Name("friend.personChanged")
     static let friendGroupChanged = Notification.Name("friend.groupChanged")
     static let friendProfileChanged = Notification.Name("friend.profileChanged")
+    static let friendStoryChanged = Notification.Name("friend.storyChanged")
 }
 
 enum AppEvents {
@@ -33,6 +34,11 @@ enum AppEvents {
     /// since several derived sections depend on profile fields.
     static func profileChanged() {
         NotificationCenter.default.post(name: .friendProfileChanged, object: nil)
+    }
+
+    /// Fire when a story is created, archived, unarchived, or deleted.
+    static func storyChanged() {
+        NotificationCenter.default.post(name: .friendStoryChanged, object: nil)
     }
 
     /// Returns the personId out of a note-saved notification, if it matches.

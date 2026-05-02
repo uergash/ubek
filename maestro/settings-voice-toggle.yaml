@@ -6,7 +6,7 @@ appId: ai.ubek.friend
 - assertVisible: "Home"
 
 - tapOn:
-    id: "home_settings"
+    id: "tab_settings"
 - assertVisible: "Voice transcription"
 
 - tapOn:
@@ -29,7 +29,7 @@ appId: ai.ubek.friend
 - tapOn: "Cancel"
 - tapOn: "Home"
 - tapOn:
-    id: "home_settings"
+    id: "tab_settings"
 - tapOn:
     id: "settings_voice_toggle"
 - tapOn: "Done"

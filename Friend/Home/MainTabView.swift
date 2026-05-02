@@ -14,7 +14,11 @@ struct MainTabView: View {
     @State private var navPath = NavigationPath()
     @State private var pendingNote: PendingNote?
     @State private var showingPersonPicker = false
-    @State private var showingSettings = false
+    @State private var showingCaptureChoice = false
+    @State private var showingAddStory = false
+    /// Choice picked in the FAB sheet — read in onDismiss to chain into the
+    /// matching capture sheet without nested presentations.
+    @State private var pendingChoice: CaptureChoice?
     private let router = NotificationRouter.shared
 
     /// Wraps the people a new-note sheet should open for. `openedFromFAB` is
@@ -49,7 +53,7 @@ struct MainTabView: View {
                     // already-active tab — matches standard iOS tab bar UX.
                     navPath = NavigationPath()
                 },
-                onAdd: { showingPersonPicker = true }
+                onAdd: { showingCaptureChoice = true }
             )
         }
         .sheet(item: $pendingNote) { pending in
@@ -63,25 +67,23 @@ struct MainTabView: View {
                 pendingNote = PendingNote(people: people, openedFromFAB: true)
             }
         }
-        .sheet(isPresented: $showingSettings) {
-            NavigationStack {
-                SettingsView { person in
-                    // Tapping a top person inside Year-in-Review: dismiss
-                    // the settings sheet and push that profile after a short
-                    // delay so SwiftUI has time to tear the sheet down.
-                    showingSettings = false
-                    Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 250_000_000)
-                        navPath.append(ProfileDestination(personId: person.id))
-                    }
+        .sheet(isPresented: $showingAddStory) {
+            AddStoryView()
+        }
+        .sheet(
+            isPresented: $showingCaptureChoice,
+            onDismiss: {
+                // SwiftUI can't stack two sheets at once; chain via onDismiss
+                // so the next capture sheet only opens after this one is gone.
+                switch pendingChoice {
+                case .story: showingAddStory = true
+                case .note:  showingPersonPicker = true
+                case .none:  break
                 }
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Done") { showingSettings = false }
-                            .font(.system(size: 15, weight: .semibold))
-                    }
-                }
+                pendingChoice = nil
             }
+        ) {
+            CaptureChoiceSheet { choice in pendingChoice = choice }
         }
         .onChange(of: router.pendingPersonId) { _, newId in
             guard let id = newId else { return }
@@ -127,13 +129,18 @@ struct MainTabView: View {
                 },
                 onAddNote: { p in
                     if let p { pendingNote = PendingNote(people: [p], openedFromFAB: true) }
-                },
-                onOpenSettings: { showingSettings = true }
+                }
             )
+        case .stories:
+            StoriesView()
         case .people:
             PeopleView(onOpenPerson: { person in
                 navPath.append(ProfileDestination(personId: person.id))
             })
+        case .settings:
+            SettingsView { person in
+                navPath.append(ProfileDestination(personId: person.id))
+            }
         }
     }
 }

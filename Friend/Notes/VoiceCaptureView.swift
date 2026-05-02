@@ -2,7 +2,7 @@ import SwiftUI
 
 @MainActor
 struct VoiceCaptureView: View {
-    @Bindable var viewModel: AddNoteViewModel
+    @Bindable var speech: SpeechRecognizer
     var onDone: () -> Void
 
     @State private var phase: Double = 0
@@ -26,9 +26,9 @@ struct VoiceCaptureView: View {
                 }
 
                 ScrollView {
-                    Text(viewModel.speech.transcript.isEmpty ? "Start talking…" : viewModel.speech.transcript)
+                    Text(speech.transcript.isEmpty ? "Start talking…" : speech.transcript)
                         .font(.system(size: 17))
-                        .foregroundStyle(viewModel.speech.transcript.isEmpty ? Color.muted : Color.ink)
+                        .foregroundStyle(speech.transcript.isEmpty ? Color.muted : Color.ink)
                         .lineSpacing(4)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -54,7 +54,7 @@ struct VoiceCaptureView: View {
     }
 
     private var waveform: some View {
-        let level = max(0.05, Double(viewModel.speech.audioLevel))
+        let level = max(0.05, Double(speech.audioLevel))
         return HStack(alignment: .center, spacing: 4) {
             ForEach(0..<28, id: \.self) { i in
                 let h = barHeight(for: i, level: level)

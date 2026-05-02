@@ -289,6 +289,69 @@ final class SupabaseService {
             .execute()
     }
 
+    // ─── Stories ───────────────────────────────────────────────────────────
+    /// Fetches all stories for the current user (RLS-scoped) ordered newest
+    /// first. Archived/active filtering is done client-side — story counts
+    /// are bounded to a single user's hand-jotted history.
+    func fetchAllStories() async throws -> [Story] {
+        try await client.from("stories")
+            .select()
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+
+    func createStory(_ story: Story) async throws -> Story {
+        try await client.from("stories")
+            .insert(story)
+            .select()
+            .single()
+            .execute()
+            .value
+    }
+
+    func archiveStory(id: UUID) async throws {
+        struct ArchivePatch: Encodable { let archived_at: Date }
+        try await client.from("stories")
+            .update(ArchivePatch(archived_at: Date()))
+            .eq("id", value: id)
+            .execute()
+    }
+
+    func unarchiveStory(id: UUID) async throws {
+        struct UnarchivePatch: Encodable { let archived_at: Date? }
+        try await client.from("stories")
+            .update(UnarchivePatch(archived_at: nil))
+            .eq("id", value: id)
+            .execute()
+    }
+
+    func deleteStory(id: UUID) async throws {
+        try await client.from("stories").delete().eq("id", value: id).execute()
+    }
+
+    // ─── Self facts ────────────────────────────────────────────────────────
+    func fetchSelfFacts() async throws -> [SelfFact] {
+        try await client.from("self_facts")
+            .select()
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+
+    func createSelfFact(_ fact: SelfFact) async throws -> SelfFact {
+        try await client.from("self_facts")
+            .insert(fact)
+            .select()
+            .single()
+            .execute()
+            .value
+    }
+
+    func deleteSelfFact(id: UUID) async throws {
+        try await client.from("self_facts").delete().eq("id", value: id).execute()
+    }
+
     // ─── AI reports ────────────────────────────────────────────────────────
     enum AIReportKind: String { case summary, nudge, fact }
 

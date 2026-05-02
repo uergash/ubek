@@ -10,7 +10,6 @@ struct HomeView: View {
     /// person's Reminders tab so the user lands where the action lives.
     var onOpenReminder: (Person) -> Void = { _ in }
     var onAddNote: (Person?) -> Void
-    var onOpenSettings: () -> Void = {}
 
     var body: some View {
         ScrollView {
@@ -60,28 +59,15 @@ struct HomeView: View {
 
     // ─── Greeting ──────────────────────────────────────────────────────────
     private var greeting: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(todayLabel)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.muted)
-                Text("\(timeGreeting),\n\(displayName).")
-                    .font(.system(size: 30, weight: .bold))
-                    .tracking(-0.6)
-                    .foregroundStyle(Color.ink)
-            }
-            Spacer(minLength: 8)
-            Button(action: onOpenSettings) {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(Color.accent)
-                    .frame(width: 38, height: 38)
-                    .background(Circle().fill(Color.card))
-                    .overlay(Circle().stroke(Color.hairline, lineWidth: 1))
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("home_settings")
-            .accessibilityLabel("Settings")
+        VStack(alignment: .leading, spacing: 4) {
+            Text(todayLabel)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color.muted)
+            Text("\(timeGreeting),\n\(displayName).")
+                .font(.system(size: 30, weight: .bold))
+                .tracking(-0.6)
+                .foregroundStyle(Color.ink)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, 22)
     }
